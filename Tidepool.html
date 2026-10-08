@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tidepool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e3f5ee; --surface:#f3fbf7; --ink:#0f3b47; --muted:#4d7480;
+  --lime:#d9f25c; --peri:#8ea6ff; --peach:#ffb59c; --sea:#2bb3a3;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0b2a33;--surface:#10384a;--ink:#e3f5ee;--muted:#9bc2c4;}
+}
+:root[data-theme="dark"]{--bg:#0b2a33;--surface:#10384a;--ink:#e3f5ee;--muted:#9bc2c4;}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.05rem/1.6 "DM Sans",system-ui,sans-serif;overflow-x:hidden}
+h1,h2{font-family:"Bricolage Grotesque","DM Sans",sans-serif;line-height:1;margin:0;letter-spacing:-.02em}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--peri);outline-offset:3px;border-radius:6px}
+
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;justify-content:space-between;align-items:center;padding:.9rem clamp(1rem,5vw,3rem);background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:blur(10px)}
+nav b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.25rem}
+nav div{display:flex;gap:1.2rem;align-items:center}
+nav a{text-decoration:none;color:var(--muted)}
+nav a:hover{color:var(--ink)}
+#theme{border:0;background:var(--ink);color:var(--bg);width:2.1rem;height:2.1rem;border-radius:50%;cursor:pointer;font-size:1rem}
+
+section{padding:clamp(3rem,9vw,7rem) clamp(1rem,5vw,3rem);max-width:1100px;margin:auto}
+h2{font-size:clamp(2rem,6vw,3.6rem);font-weight:800;margin-bottom:.6rem}
+.lead{color:var(--muted);max-width:46ch;margin:0 0 2rem}
+
+/* hero */
+.hero{position:relative;max-width:none;padding:0;height:min(86vh,720px);min-height:480px;overflow:hidden}
+#sea{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y}
+.hero-copy{position:relative;z-index:1;pointer-events:none;padding:clamp(2rem,8vw,6rem) clamp(1rem,5vw,3rem);max-width:1100px;margin:auto}
+.hero h1{font-size:clamp(3.2rem,13vw,9rem);font-weight:800}
+.hero h1 span{display:inline-block;animation:bob 3.6s ease-in-out infinite}
+.hero h1 span:nth-child(2n){animation-delay:-.6s}.hero h1 span:nth-child(3n){animation-delay:-1.4s}
+@keyframes bob{50%{transform:translateY(-.09em)}}
+.hero p{max-width:32ch;color:var(--muted);margin:1rem 0 0}
+.hint{position:absolute;z-index:1;bottom:1.2rem;left:50%;transform:translateX(-50%);background:var(--lime);color:#0f3b47;padding:.4rem 1rem;border-radius:99px;font-size:.9rem;font-weight:500;white-space:nowrap;animation:fade 1s 4s forwards}
+@keyframes fade{to{opacity:.0;visibility:hidden}}
+.wave{display:block;width:100%;height:60px;margin-top:-1px;fill:var(--surface)}
+.wave path{animation:slide 9s linear infinite}
+@keyframes slide{to{transform:translateX(-50%)}}
+.wave svg{width:200%;height:100%}
+
+/* panels */
+.band{background:var(--surface);max-width:none}
+.band>div{max-width:1100px;margin:auto}
+.btns{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.2rem}
+button.pill{font:500 1rem "DM Sans",sans-serif;border:2px solid var(--ink);background:transparent;color:var(--ink);padding:.6rem 1.2rem;border-radius:99px;cursor:pointer;transition:transform .15s,background .15s}
+button.pill:hover{transform:translateY(-2px)}
+button.pill[aria-pressed="true"]{background:var(--lime);color:#0f3b47;border-color:var(--lime)}
+.keys{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;margin:1rem 0}
+.keys button{aspect-ratio:1/1.3;border:0;border-radius:14px;cursor:pointer;transition:transform .12s;color:#0f3b47;font:500 .9rem "DM Sans"}
+.keys button:active,.keys button.on{transform:scale(.93) translateY(4px)}
+#viz{width:100%;height:110px;display:block;border-radius:14px;background:var(--bg)}
+label.vol{display:flex;gap:.8rem;align-items:center;color:var(--muted);margin-top:1rem}
+input[type=range]{accent-color:var(--sea);width:min(260px,60vw)}
+
+.video-wrap{position:relative;border-radius:22px;overflow:hidden;background:#0f3b47;aspect-ratio:16/9}
+.video-wrap video,.video-wrap canvas{width:100%;height:100%;display:block;object-fit:cover}
+#vmsg{position:absolute;inset:auto auto 1rem 1rem;background:var(--lime);color:#0f3b47;padding:.3rem .8rem;border-radius:99px;font-size:.85rem}
+
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem}
+.tile{border-radius:22px;overflow:hidden;position:relative;cursor:pointer;background:var(--surface);transition:transform .35s cubic-bezier(.2,.8,.2,1);aspect-ratio:4/5}
+.tile svg{width:100%;height:100%;display:block}
+.tile:nth-child(2){margin-top:2rem}.tile:nth-child(3){margin-top:4rem}
+.tile figcaption{position:absolute;left:1rem;bottom:1rem;background:var(--bg);padding:.25rem .8rem;border-radius:99px;font-size:.85rem}
+.tile .spin{transform-origin:50% 50%;animation:turn 40s linear infinite}
+@keyframes turn{to{transform:rotate(360deg)}}
+footer{text-align:center;color:var(--muted);padding:3rem 1rem 4rem}
+@media (max-width:600px){.tile:nth-child(n){margin-top:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<nav>
+  <b>tidepool</b>
+  <div><a href="#listen">Listen</a><a href="#watch">Watch</a><a href="#look">Look</a>
+  <button id="theme" aria-label="Toggle dark mode">◐</button></div>
+</nav>
+
+<section class="hero" aria-label="Intro">
+  <canvas id="sea" aria-label="Interactive bubbles. Move or tap to push and pop them."></canvas>
+  <div class="hero-copy">
+    <h1 aria-label="Slow down">
+      <span>S</span><span>l</span><span>o</span><span>w</span><br><span>d</span><span>o</span><span>w</span><span>n</span>
+    </h1>
+    <p>A small corner of the internet that sounds, moves and looks like low tide.</p>
+  </div>
+  <div class="hint">Touch the water. Pop a bubble.</div>
+</section>
+<div class="wave" aria-hidden="true"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0 30 Q150 0 300 30 T600 30 T900 30 T1200 30 V60 H0Z"/></svg></div>
+
+<section class="band" id="listen"><div>
+  <h2>Listen</h2>
+  <p class="lead">Start the tide, then play the shells on top of it. Everything you hear is made in your browser.</p>
+  <div class="btns">
+    <button class="pill" id="tide" aria-pressed="false">Start the tide</button>
+  </div>
+  <div class="keys" id="keys"></div>
+  <canvas id="viz" aria-label="Live sound visualiser"></canvas>
+  <label class="vol">Volume <input type="range" id="vol" min="0" max="1" step=".01" value=".6"></label>
+</div></section>
+
+<section id="watch">
+  <h2>Watch</h2>
+  <p class="lead">A short loop drawn live, recorded, and played back as a real video.</p>
+  <div class="video-wrap">
+    <video id="vid" muted loop playsinline controls hidden></video>
+    <canvas id="stage" width="640" height="360"></canvas>
+    <span id="vmsg">Rendering clip…</span>
+  </div>
+</section>
+
+<section id="look">
+  <h2>Look</h2>
+  <p class="lead">Tap a picture to change its mood.</p>
+  <div class="gallery" id="gallery">
+    <figure class="tile" style="margin-inline:0" tabindex="0" role="button" aria-label="Sun picture, tap to recolor">
+      <svg viewBox="0 0 400 500" data-set="0"><rect class="a" width="400" height="500" fill="#8ea6ff"/><g class="spin"><circle class="b" cx="200" cy="230" r="90" fill="#ffb59c"/><g stroke="#ffb59c" stroke-width="10" stroke-linecap="round"><path d="M200 70v-30M200 420v-30M40 230h30M330 230h30M85 115l20 20M295 325l20 20M85 345l20-20M295 135l20-20"/></g></g><path class="c" d="M0 330Q100 290 200 330T400 330V500H0Z" fill="#2bb3a3"/><path class="d" d="M0 390Q100 350 200 390T400 390V500H0Z" fill="#0f3b47"/></svg>
+      <figcaption>Noon</figcaption></figure>
+    <figure class="tile" style="margin-inline:0" tabindex="0" role="button" aria-label="Shell picture, tap to recolor">
+      <svg viewBox="0 0 400 500" data-set="1"><rect class="a" width="400" height="500" fill="#d9f25c"/><g class="spin"><path class="b" d="M200 110c70 0 110 60 110 120s-50 110-110 110S90 290 90 230s40-120 110-120Z" fill="#2bb3a3"/><path class="c" d="M200 160c40 0 65 35 65 70s-30 65-65 65-65-30-65-65 25-70 65-70Z" fill="#e3f5ee"/><circle class="d" cx="200" cy="230" r="22" fill="#0f3b47"/></g></svg>
+      <figcaption>Shell</figcaption></figure>
+    <figure class="tile" style="margin-inline:0" tabindex="0" role="button" aria-label="Fish picture, tap to recolor">
+      <svg viewBox="0 0 400 500" data-set="2"><rect class="a" width="400" height="500" fill="#ffb59c"/><g class="spin"><ellipse class="b" cx="190" cy="250" rx="110" ry="62" fill="#0f3b47"/><path class="c" d="M290 250l70-55v110Z" fill="#8ea6ff"/><circle class="d" cx="130" cy="236" r="10" fill="#d9f25c"/></g><g fill="none" stroke="#f3fbf7" stroke-width="5"><circle cx="80" cy="140" r="14"/><circle cx="320" cy="360" r="20"/><circle cx="100" cy="400" r="9"/></g></svg>
+      <figcaption>Fish</figcaption></figure>
+  </div>
+</section>
+<footer>Made with HTML, CSS and a little JavaScript.</footer>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* theme toggle */
+$('#theme').onclick=()=>{
+  const r=document.documentElement;
+  const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;
+  r.dataset.theme=dark?'light':'dark';
+};
+
+/* ---------- hero: bubbles ---------- */
+const sea=$('#sea'),sc=sea.getContext('2d');
+let W,H,bubbles=[],ptr={x:-999,y:-999},ripples=[];
+function size(){const d=devicePixelRatio||1;W=sea.clientWidth;H=sea.clientHeight;sea.width=W*d;sea.height=H*d;sc.setTransform(d,0,0,d,0,0)}
+addEventListener('resize',size);size();
+const cols=()=>[css('--peri'),css('--lime'),css('--peach'),css('--sea')];
+function bub(x,y){const c=cols();return{x:x??Math.random()*W,y:y??H+Math.random()*H,r:8+Math.random()*34,c:c[Math.random()*4|0],vy:.3+Math.random()*.8,ph:Math.random()*6,vx:0}}
+for(let i=0;i<Math.min(46,W/22);i++)bubbles.push(bub(Math.random()*W,Math.random()*H));
+function pos(e){const b=sea.getBoundingClientRect();ptr.x=e.clientX-b.left;ptr.y=e.clientY-b.top}
+sea.addEventListener('pointermove',pos);
+sea.addEventListener('pointerleave',()=>ptr.x=-999);
+addEventListener('pointermove',e=>{if(e.target!==sea)ptr.x=-999});
+sea.addEventListener('pointerdown',e=>{pos(e);
+  bubbles.forEach((b,i)=>{if(Math.hypot(b.x-ptr.x,b.y-ptr.y)<b.r+6){ripples.push({x:b.x,y:b.y,r:b.r,c:b.c});bubbles[i]=bub();playPop()}});
+  ripples.push({x:ptr.x,y:ptr.y,r:6,c:css('--ink')});
+});
+let t=0;
+function loop(){
+  t+=.016;sc.clearRect(0,0,W,H);
+  for(const b of bubbles){
+    const dx=b.x-ptr.x,dy=b.y-ptr.y,d=Math.hypot(dx,dy);
+    if(d<b.r+90){const f=(b.r+90-d)/90;b.vx+=dx/d*f*.9}
+    b.vx*=.92;b.x+=b.vx+Math.sin(t+b.ph)*.4;b.y-=b.vy;
+    if(b.y<-b.r*2){Object.assign(b,bub(undefined,H+b.r))}
+    sc.globalAlpha=.85;sc.fillStyle=b.c;sc.beginPath();sc.arc(b.x,b.y,b.r,0,7);sc.fill();
+    sc.globalAlpha=.55;sc.fillStyle='#fff';sc.beginPath();sc.arc(b.x-b.r*.3,b.y-b.r*.3,b.r*.22,0,7);sc.fill();
+  }
+  ripples=ripples.filter(r=>r.a!==0);
+  for(const r of ripples){r.r+=3;r.a=(r.a??1)-.04;if(r.a<=0){r.a=0;continue}
+    sc.globalAlpha=r.a;sc.strokeStyle=r.c;sc.lineWidth=3;sc.beginPath();sc.arc(r.x,r.y,r.r,0,7);sc.stroke()}
+  sc.globalAlpha=1;
+  if(!reduce||true)requestAnimationFrame(loop);
+}
+loop();
+
+/* ---------- audio ---------- */
+let ac,master,an,noiseGain,tideOn=false,tideNodes=[];
+function initAudio(){
+  if(ac)return;
+  ac=new (window.AudioContext||window.webkitAudioContext)();
+  master=ac.createGain();master.gain.value=+$('#vol').value;
+  an=ac.createAnalyser();an.fftSize=128;
+  master.connect(an);an.connect(ac.destination);
+}
+$('#vol').oninput=e=>{if(master)master.gain.value=+e.target.value};
+function startTide(){
+  const len=ac.sampleRate*3,buf=ac.createBuffer(1,len,ac.sampleRate),d=buf.getChannelData(0);
+  let last=0;for(let i=0;i<len;i++){const w=Math.random()*2-1;last=(last+.02*w)/1.02;d[i]=last*3.5}
+  const src=ac.createBufferSource();src.buffer=buf;src.loop=true;
+  const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=500;
+  const g=ac.createGain();g.gain.value=.5;
+  const lfo=ac.createOscillator(),lg=ac.createGain();lfo.frequency.value=.11;lg.gain.value=.35;
+  lfo.connect(lg);lg.connect(g.gain);
+  const lf2=ac.createGain();lf2.gain.value=300;lfo.connect(lf2);lf2.connect(lp.frequency);
+  src.connect(lp);lp.connect(g);g.connect(master);
+  src.start();lfo.start();tideNodes=[src,lfo];
+}
+$('#tide').onclick=function(){
+  initAudio();ac.resume();
+  tideOn=!tideOn;this.setAttribute('aria-pressed',tideOn);
+  this.textContent=tideOn?'Stop the tide':'Start the tide';
+  if(tideOn)startTide();else tideNodes.forEach(n=>n.stop());
+  drawViz();
+};
+const notes=[['C',261.63],['D',293.66],['E',329.63],['G',392],['A',440]];
+const kc=['--peri','--lime','--peach','--sea','--peri'];
+function play(f){
+  initAudio();ac.resume();
+  const o=ac.createOscillator(),o2=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime;
+  o.type='sine';o2.type='triangle';o.frequency.value=f;o2.frequency.value=f*2;
+  g.gain.setValueAtTime(0,n);g.gain.linearRampToValueAtTime(.35,n+.02);g.gain.exponentialRampToValueAtTime(.001,n+2.2);
+  const g2=ac.createGain();g2.gain.value=.15;o2.connect(g2);g2.connect(g);o.connect(g);g.connect(master);
+  o.start();o2.start();o.stop(n+2.3);o2.stop(n+2.3);drawViz();
+}
+function playPop(){
+  if(!ac)return;ac.resume();
+  const o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime;
+  o.frequency.setValueAtTime(500+Math.random()*500,n);o.frequency.exponentialRampToValueAtTime(120,n+.12);
+  g.gain.setValueAtTime(.25,n);g.gain.exponentialRampToValueAtTime(.001,n+.14);
+  o.connect(g);g.connect(master);o.start();o.stop(n+.15);
+}
+const keys=$('#keys');
+notes.forEach(([n,f],i)=>{
+  const b=document.createElement('button');b.textContent=n;b.style.background=`var(${kc[i]})`;
+  const hit=()=>{play(f);b.classList.add('on');setTimeout(()=>b.classList.remove('on'),140)};
+  b.addEventListener('pointerdown',e=>{e.preventDefault();hit()});
+  b.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();hit()}});
+  keys.appendChild(b);
+});
+addEventListener('keydown',e=>{const i='12345'.indexOf(e.key);if(i>-1&&document.activeElement.tagName!=='INPUT')keys.children[i].dispatchEvent(new PointerEvent('pointerdown'))});
+
+const vz=$('#viz'),vc=vz.getContext('2d');let vizRun=false;
+function drawViz(){
+  if(vizRun)return;vizRun=true;
+  const fr=()=>{
+    const d=devicePixelRatio||1,w=vz.clientWidth,h=vz.clientHeight;
+    if(vz.width!==w*d){vz.width=w*d;vz.height=h*d}
+    vc.setTransform(d,0,0,d,0,0);vc.clearRect(0,0,w,h);
+    const a=new Uint8Array(an.frequencyBinCount);an.getByteFrequencyData(a);
+    const n=40,bw=w/n;let sum=0;
+    for(let i=0;i<n;i++){
+      const v=a[i]/255,bh=Math.max(4,v*h*.95);sum+=a[i];
+      vc.fillStyle=css(['--peri','--sea','--lime','--peach'][i%4]);
+      vc.beginPath();vc.roundRect(i*bw+3,h-bh,bw-6,bh,6);vc.fill();
+    }
+    if(sum>0||tideOn)requestAnimationFrame(fr);else vizRun=false;
+  };fr();
+}
+
+/* ---------- video: canvas -> recorded clip ---------- */
+const st=$('#stage'),x=st.getContext('2d'),vid=$('#vid'),msg=$('#vmsg');
+function scene(t){
+  const w=640,h=360;
+  const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#8ea6ff');g.addColorStop(1,'#ffb59c');
+  x.fillStyle=g;x.fillRect(0,0,w,h);
+  x.fillStyle='#d9f25c';x.beginPath();x.arc(w*.5+Math.cos(t*1.2)*180,150-Math.sin(t*1.2)*70,46,0,7);x.fill();
+  [['#2bb3a3',.9,200,18],['#1a7f8c',1.3,240,24],['#0f3b47',1.7,285,30]].forEach(([c,s,y,a],i)=>{
+    x.fillStyle=c;x.beginPath();x.moveTo(0,h);
+    for(let px=0;px<=w;px+=8)x.lineTo(px,y+Math.sin(px/70+t*s*2+i)*a);
+    x.lineTo(w,h);x.fill();
+  });
+}
+let live=true;
+(function anim(){if(live){scene(performance.now()/1000);requestAnimationFrame(anim)}})();
+function record(){
+  if(!window.MediaRecorder||!st.captureStream){msg.textContent='Live preview';return}
+  try{
+    const rec=new MediaRecorder(st.captureStream(30)),parts=[];
+    rec.ondataavailable=e=>parts.push(e.data);
+    rec.onstop=()=>{
+      live=false;
+      vid.src=URL.createObjectURL(new Blob(parts,{type:rec.mimeType||'video/webm'}));
+      vid.hidden=false;st.hidden=true;msg.remove();vid.play().catch(()=>{});
+    };
+    rec.start();setTimeout(()=>rec.stop(),6283);
+  }catch(e){msg.textContent='Live preview'}
+}
+new IntersectionObserver((en,ob)=>{if(en[0].isIntersecting){ob.disconnect();record()}},{threshold:.3}).observe($('#watch'));
+
+/* ---------- gallery recolor ---------- */
+const sets=[
+  ['#8ea6ff','#ffb59c','#2bb3a3','#0f3b47'],
+  ['#d9f25c','#2bb3a3','#e3f5ee','#0f3b47'],
+  ['#ffb59c','#0f3b47','#8ea6ff','#d9f25c'],
+  ['#2bb3a3','#d9f25c','#0f3b47','#ffb59c'],
+  ['#0f3b47','#8ea6ff','#ffb59c','#d9f25c']
+];
+document.querySelectorAll('.tile').forEach(t=>{
+  const svg=t.querySelector('svg');let k=0;
+  const go=()=>{k=(k+1)%sets.length;
+    ['a','b','c','d'].forEach((c,i)=>{const el=svg.querySelector('.'+c);if(el)el.style.transition='fill .5s',el.setAttribute('fill',sets[k][i])})};
+  t.onclick=go;t.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}};
+  t.onpointermove=e=>{const b=t.getBoundingClientRect();
+    t.style.transform=`perspective(700px) rotateY(${((e.clientX-b.left)/b.width-.5)*10}deg) rotateX(${-((e.clientY-b.top)/b.height-.5)*10}deg)`};
+  t.onpointerleave=()=>t.style.transform='';
+});
+})();
+</script>
+</body>
+</html>
